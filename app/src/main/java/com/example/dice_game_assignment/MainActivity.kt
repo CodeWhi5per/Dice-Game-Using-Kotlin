@@ -5,9 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,73 +37,77 @@ fun DiceGameApp() {
     var showTargetSetScreen by remember { mutableStateOf(false) }
     var targetScore by remember { mutableStateOf(101) }
 
-    if (showGameScreen) {
-        GameScreen(onBack = { showGameScreen = false }, targetScore = targetScore)
-    } else if (showTargetSetScreen) {
-        TargetSetScreen(
-            onCancel = { showTargetSetScreen = false },
-            onOk = { newTarget ->
-                targetScore = newTarget
-                showTargetSetScreen = false
-                showGameScreen = true
-            }
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.dice_app_background),
-                contentDescription = "Dice App Background",
-                modifier = Modifier
-                    .size(410.dp)
-                    .align(Alignment.TopCenter)
-                    .padding(top = 280.dp)
+    when {
+        showTargetSetScreen -> {
+            TargetSetScreen(
+                onCancel = { showTargetSetScreen = false },
+                onOk = { newTarget ->
+                    targetScore = newTarget
+                    showTargetSetScreen = false
+                    showGameScreen = true
+                }
             )
-            Column(
+        }
+        showGameScreen -> {
+            GameScreen(targetScore)
+        }
+        else -> {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(bottom = 130.dp),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(Color.Black)
             ) {
-                Button(
-                    onClick = { showTargetSetScreen = true },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF00E5FF),
-                        contentColor = Color.Black
-                    ),
+                Image(
+                    painter = painterResource(id = R.drawable.dice_app_background),
+                    contentDescription = "Dice App Background",
                     modifier = Modifier
-                        .padding(8.dp)
-                        .height(60.dp)
-                        .width(200.dp)
-                ) {
-                    Text(
-                        text = "NEW GAME",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { showAboutDialog = true },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    ),
+                        .size(410.dp)
+                        .align(Alignment.TopCenter)
+                        .padding(top = 280.dp)
+                )
+                Column(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .height(60.dp)
-                        .width(200.dp)
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .padding(bottom = 130.dp),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "ABOUT",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Button(
+                        onClick = { showTargetSetScreen = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF00E5FF),
+                            contentColor = Color.Black
+                        ),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(60.dp)
+                            .width(200.dp)
+                    ) {
+                        Text(
+                            text = "NEW GAME",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { showAboutDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        ),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(60.dp)
+                            .width(200.dp)
+                    ) {
+                        Text(
+                            text = "ABOUT",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -165,142 +168,6 @@ fun AboutDialog(onDismiss: () -> Unit) {
         }
     }
 }
-
-@Composable
-fun GameScreen(onBack: () -> Unit, targetScore: Int) {
-    var humanScore by remember { mutableStateOf(0) }
-    var computerScore by remember { mutableStateOf(0) }
-    var humanDice by remember { mutableStateOf(List(5) { Random.nextInt(1, 7) }) }
-    var computerDice by remember { mutableStateOf(List(5) { Random.nextInt(1, 7) }) }
-    var rollsLeft by remember { mutableStateOf(3) }
-    var selectedDice by remember { mutableStateOf<List<Int>>(emptyList()) }
-    var gameOver by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "H: $humanScore / C: $computerScore", fontSize = 18.sp)
-            Text(text = "Target: $targetScore", fontSize = 18.sp)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Human Dice:", fontSize = 16.sp)
-        DiceRow(diceValues = humanDice, selectedDice = selectedDice, onDiceSelected = { index ->
-            selectedDice = if (index in selectedDice) selectedDice - index else selectedDice + index
-        })
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Computer Dice:", fontSize = 16.sp)
-        DiceRow(diceValues = computerDice, selectedDice = emptyList(), onDiceSelected = {})
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = {
-                if (rollsLeft > 0) {
-                    humanDice = humanDice.mapIndexed { index, value ->
-                        if (index in selectedDice) value else Random.nextInt(1, 7)
-                    }
-                    computerDice = computerDice.map { Random.nextInt(1, 7) }
-                    rollsLeft--
-                }
-            }, enabled = rollsLeft > 0) {
-                Text("Throw ($rollsLeft left)")
-            }
-            Button(onClick = {
-                humanScore += humanDice.sum()
-                computerScore += computerDice.sum()
-                if (humanScore >= targetScore || computerScore >= targetScore) {
-                    gameOver = true
-                } else {
-                    humanDice = List(5) { Random.nextInt(1, 7) }
-                    computerDice = List(5) { Random.nextInt(1, 7) }
-                    rollsLeft = 3
-                    selectedDice = emptyList()
-                }
-            }) {
-                Text("Score")
-            }
-        }
-        if (gameOver) {
-            val winner = if (humanScore >= targetScore && humanScore > computerScore) "You win!" else "You lose!"
-            val color = if (winner == "You win!") Color.Green else Color.Red
-            Dialog(onDismissRequest = {}) {
-                Surface(
-                    modifier = Modifier.padding(16.dp),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = winner, fontSize = 24.sp, color = color)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = onBack) {
-                            Text("Back to Main Menu")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DiceRow(diceValues: List<Int>, selectedDice: List<Int>, onDiceSelected: (Int) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        diceValues.forEachIndexed { index, value ->
-            DiceImage(
-                value = value,
-                isSelected = index in selectedDice,
-                onClick = { onDiceSelected(index) }
-            )
-        }
-    }
-}
-
-@Composable
-fun DiceImage(value: Int, isSelected: Boolean, onClick: () -> Unit) {
-    val imageRes = when (value) {
-        1 -> R.drawable.dice_1
-        2 -> R.drawable.dice_2
-        3 -> R.drawable.dice_3
-        4 -> R.drawable.dice_4
-        5 -> R.drawable.dice_5
-        6 -> R.drawable.dice_6
-        else -> R.drawable.dice_1
-    }
-    Box(
-        modifier = Modifier
-            .size(64.dp)
-            .padding(4.dp)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = "Dice $value",
-            modifier = Modifier.size(64.dp)
-        )
-        if (isSelected) {
-            Text(
-                text = "✓",
-                modifier = Modifier.align(Alignment.TopEnd),
-                color = Color.Green,
-                fontSize = 20.sp
-            )
-        }
-    }
-}
-
 
 @Composable
 fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
@@ -385,5 +252,247 @@ fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
                 Spacer(modifier = Modifier.width(50.dp))
             }
         }
+    }
+}
+
+@Composable
+fun GameScreen(targetScore: Int) {
+    var leftDiceImages by remember { mutableStateOf((1..6).shuffled().take(5)) }
+    var rightDiceImages by remember { mutableStateOf((7..12).shuffled().take(5)) }
+    var leftDiceSum by remember { mutableStateOf(0) }
+    var rightDiceSum by remember { mutableStateOf(0) }
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "WIN COUNT",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(70.dp)
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "5",
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(70.dp)
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "3",
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "SCORE",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(70.dp)
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "H : $leftDiceSum",
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(70.dp)
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "C : $rightDiceSum",
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(40.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 100.dp)
+                .background(Color(0xFF262626), shape = RoundedCornerShape(16.dp))
+                .width(20.dp)
+                .height(60.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "$targetScore",
+                color = Color.White,
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Black
+            )
+        }
+        Spacer(modifier = Modifier.height(40.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 70.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.user_icon),
+                    contentDescription = "User",
+                    modifier = Modifier.size(40.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                leftDiceImages.forEach { dice ->
+                    Image(
+                        painter = painterResource(id = getDiceResource(dice)),
+                        contentDescription = "Dice $dice",
+                        modifier = Modifier.size(70.dp)
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 70.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.computer_icon),
+                    contentDescription = "Computer",
+                    modifier = Modifier.size(45.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                rightDiceImages.forEach { dice ->
+                    Image(
+                        painter = painterResource(id = getDiceResource(dice)),
+                        contentDescription = "Dice $dice",
+                        modifier = Modifier.size(70.dp)
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 32.dp)
+        ) {
+            Button(
+                onClick = {
+                    leftDiceImages = (1..6).shuffled().take(5)
+                    rightDiceImages = (7..12).shuffled().take(5)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF5722),
+                    contentColor = Color.Black
+                ),
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(120.dp)
+            ) {
+                Text(
+                    text = "THROW",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Button(
+                onClick = {
+                    leftDiceSum = leftDiceImages.sum()
+                    rightDiceSum = rightDiceImages.map { (it - 1) % 6 + 1 }.sum()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF08FF00),
+                    contentColor = Color.Black
+                ),
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(120.dp)
+            ) {
+                Text(
+                    text = "SCORE",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+fun getDiceResource(dice: Int): Int {
+    return when (dice) {
+        1 -> R.drawable.dice_1
+        2 -> R.drawable.dice_2
+        3 -> R.drawable.dice_3
+        4 -> R.drawable.dice_4
+        5 -> R.drawable.dice_5
+        6 -> R.drawable.dice_6
+        7 -> R.drawable.dice_7
+        8 -> R.drawable.dice_8
+        9 -> R.drawable.dice_9
+        10 -> R.drawable.dice_10
+        11 -> R.drawable.dice_11
+        12 -> R.drawable.dice_12
+        else -> R.drawable.dice_1
     }
 }
