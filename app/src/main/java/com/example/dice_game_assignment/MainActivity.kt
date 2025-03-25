@@ -276,16 +276,13 @@ fun GameScreen(targetScore: Int) {
         computerTotalScore += rightDiceSum
         selectedDice = List(5) { false } // Clear the red borders
         computerSelectedDice = List(5) { false } // Clear the green borders
-        leftDiceImages = List(5) { (1..6).random() } // Reset human dice
     }
 
     fun rerollDice() {
         leftDiceImages = leftDiceImages.mapIndexed { index, dice ->
             if (selectedDice[index]) dice else (1..6).random()
         }
-        rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
-            if (computerSelectedDice[index]) dice else (1..6).random()
-        }
+        rightDiceImages = List(5) { (1..6).random() }
     }
 
     fun computerRerollDice() {
@@ -293,9 +290,7 @@ fun GameScreen(targetScore: Int) {
         val reroll = (0..1).random() == 1
         if (reroll) {
             // Randomly decide which dice to keep
-            computerSelectedDice = computerSelectedDice.map { selected ->
-                if (selected) true else (0..1).random() == 1
-            }
+            computerSelectedDice = List(5) { (0..1).random() == 1 }
             rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
                 if (computerSelectedDice[index]) dice else (1..6).random()
             }
@@ -448,7 +443,7 @@ fun GameScreen(targetScore: Int) {
                             .size(70.dp)
                             .border(
                                 width = 2.dp,
-                                color = if (selectedDice[index]) Color.Red else Color.Transparent,
+                                color = if (selectedDice[index]) Color(0xFF26FF00) else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
@@ -483,8 +478,8 @@ fun GameScreen(targetScore: Int) {
                         modifier = Modifier
                             .size(70.dp)
                             .border(
-                                width = 2.dp,
-                                color = if (computerSelectedDice[index]) Color.Green else Color.Transparent,
+                                width = 4.dp,
+                                color = if (computerSelectedDice[index]) Color(0xFFFF00E5) else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             ),
                         contentAlignment = Alignment.Center
