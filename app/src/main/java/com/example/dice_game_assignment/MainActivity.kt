@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -264,12 +266,20 @@ fun GameScreen(targetScore: Int) {
     var rollCount by remember { mutableStateOf(0) }
     var humanTotalScore by remember { mutableStateOf(0) }
     var computerTotalScore by remember { mutableStateOf(0) }
+    var selectedDice by remember { mutableStateOf(List(5) { false }) }
 
     fun updateScores() {
         leftDiceSum = leftDiceImages.sum()
         rightDiceSum = rightDiceImages.sum()
         humanTotalScore += leftDiceSum
         computerTotalScore += rightDiceSum
+    }
+
+    fun rerollDice() {
+        leftDiceImages = leftDiceImages.mapIndexed { index, dice ->
+            if (selectedDice[index]) dice else (1..6).random()
+        }
+        rightDiceImages = List(5) { (1..6).random() }
     }
 
     Column(
@@ -410,12 +420,27 @@ fun GameScreen(targetScore: Int) {
                     modifier = Modifier.size(40.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                leftDiceImages.forEach { dice ->
-                    Image(
-                        painter = painterResource(id = getDiceResource(dice)),
-                        contentDescription = "Dice $dice",
-                        modifier = Modifier.size(70.dp)
-                    )
+                leftDiceImages.forEachIndexed { index, dice ->
+                    Box(
+                        modifier = Modifier
+                            .size(70.dp)
+                            .border(
+                                width = 2.dp,
+                                color = if (selectedDice[index]) Color.Red else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
+                                selectedDice = selectedDice.toMutableList().apply {
+                                    this[index] = !this[index]
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = getDiceResource(dice)),
+                            contentDescription = "Dice $dice"
+                        )
+                    }
                 }
             }
             Column(
@@ -448,8 +473,7 @@ fun GameScreen(targetScore: Int) {
         ) {
             Button(
                 onClick = {
-                    leftDiceImages = List(5) { (1..6).random() }
-                    rightDiceImages = List(5) { (1..6).random() }
+                    rerollDice()
                     rollCount++
                     if (rollCount == 3) {
                         updateScores()
