@@ -276,6 +276,7 @@ fun GameScreen(targetScore: Int) {
         computerTotalScore += rightDiceSum
         selectedDice = List(5) { false } // Clear the red borders
         computerSelectedDice = List(5) { false } // Clear the green borders
+        leftDiceImages = List(5) { (1..6).random() } // Reset human dice
     }
 
     fun rerollDice() {
@@ -443,7 +444,7 @@ fun GameScreen(targetScore: Int) {
                             .size(70.dp)
                             .border(
                                 width = 2.dp,
-                                color = if (selectedDice[index]) Color(0xFF26FF00) else Color.Transparent,
+                                color = if (selectedDice[index]) Color.Red else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
@@ -478,8 +479,8 @@ fun GameScreen(targetScore: Int) {
                         modifier = Modifier
                             .size(70.dp)
                             .border(
-                                width = 4.dp,
-                                color = if (computerSelectedDice[index]) Color(0xFFFF00E5) else Color.Transparent,
+                                width = 2.dp,
+                                color = if (computerSelectedDice[index]) Color.Green else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             ),
                         contentAlignment = Alignment.Center
