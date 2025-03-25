@@ -19,6 +19,8 @@ fun DiceGameApp() {
     var showAboutDialog by remember { mutableStateOf(false) }
     var showTargetSetScreen by remember { mutableStateOf(false) }
     var targetScore by remember { mutableIntStateOf(101) }
+    var humanWinCount by remember { mutableIntStateOf(0) }
+    var computerWinCount by remember { mutableIntStateOf(0) }
 
     when {
         showTargetSetScreen -> {
@@ -32,7 +34,16 @@ fun DiceGameApp() {
             )
         }
         showGameScreen -> {
-            GameScreen(targetScore, onBack = { showGameScreen = false })
+            GameScreen(
+                targetScore = targetScore,
+                humanWinCount = humanWinCount,
+                computerWinCount = computerWinCount,
+                onBack = { showGameScreen = false },
+                onWinUpdate = { humanWins, computerWins ->
+                    humanWinCount = humanWins
+                    computerWinCount = computerWins
+                }
+            )
         }
         else -> {
             Box(

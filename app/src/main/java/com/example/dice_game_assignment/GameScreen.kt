@@ -20,7 +20,13 @@ import androidx.activity.compose.BackHandler
 import kotlinx.coroutines.*
 
 @Composable
-fun GameScreen(targetScore: Int, onBack: () -> Unit) {
+fun GameScreen(
+    targetScore: Int,
+    humanWinCount: Int,
+    computerWinCount: Int,
+    onBack: () -> Unit,
+    onWinUpdate: (Int, Int) -> Unit
+) {
     var leftDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var rightDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var leftDiceSum by remember { mutableIntStateOf(0) }
@@ -34,6 +40,8 @@ fun GameScreen(targetScore: Int, onBack: () -> Unit) {
     var winMessage by remember { mutableStateOf("") }
     var winMessageColor by remember { mutableStateOf(Color.White) }
     var gameOver by remember { mutableStateOf(false) }
+    var currentHumanWinCount by remember { mutableIntStateOf(humanWinCount) }
+    var currentComputerWinCount by remember { mutableIntStateOf(computerWinCount) }
 
     BackHandler {
         onBack()
@@ -52,11 +60,15 @@ fun GameScreen(targetScore: Int, onBack: () -> Unit) {
             winMessageColor = Color.Green
             showWinDialog = true
             gameOver = true
+            currentHumanWinCount++
+            onWinUpdate(currentHumanWinCount, currentComputerWinCount)
         } else if (computerTotalScore >= targetScore) {
             winMessage = "You lose"
             winMessageColor = Color.Red
             showWinDialog = true
             gameOver = true
+            currentComputerWinCount++
+            onWinUpdate(currentHumanWinCount, currentComputerWinCount)
         }
     }
 
@@ -123,7 +135,7 @@ fun GameScreen(targetScore: Int, onBack: () -> Unit) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "5",
+                            text = "$currentHumanWinCount",
                             color = Color.Black,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
@@ -137,7 +149,7 @@ fun GameScreen(targetScore: Int, onBack: () -> Unit) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "3",
+                            text = "$currentComputerWinCount",
                             color = Color.Black,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
