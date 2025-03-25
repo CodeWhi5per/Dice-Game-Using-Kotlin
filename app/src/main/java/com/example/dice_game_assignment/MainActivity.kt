@@ -283,7 +283,9 @@ fun GameScreen(targetScore: Int) {
         leftDiceImages = leftDiceImages.mapIndexed { index, dice ->
             if (selectedDice[index]) dice else (1..6).random()
         }
-        rightDiceImages = List(5) { (1..6).random() }
+        rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
+            if (computerSelectedDice[index]) dice else (1..6).random()
+        }
     }
 
     fun computerRerollDice() {
@@ -291,7 +293,9 @@ fun GameScreen(targetScore: Int) {
         val reroll = (0..1).random() == 1
         if (reroll) {
             // Randomly decide which dice to keep
-            computerSelectedDice = List(5) { (0..1).random() == 1 }
+            computerSelectedDice = computerSelectedDice.map { selected ->
+                if (selected) true else (0..1).random() == 1
+            }
             rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
                 if (computerSelectedDice[index]) dice else (1..6).random()
             }
