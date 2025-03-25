@@ -267,6 +267,7 @@ fun GameScreen(targetScore: Int) {
     var humanTotalScore by remember { mutableStateOf(0) }
     var computerTotalScore by remember { mutableStateOf(0) }
     var selectedDice by remember { mutableStateOf(List(5) { false }) }
+    var computerSelectedDice by remember { mutableStateOf(List(5) { false }) }
 
     fun updateScores() {
         leftDiceSum = leftDiceImages.sum()
@@ -274,6 +275,7 @@ fun GameScreen(targetScore: Int) {
         humanTotalScore += leftDiceSum
         computerTotalScore += rightDiceSum
         selectedDice = List(5) { false } // Clear the red borders
+        computerSelectedDice = List(5) { false } // Clear the green borders
     }
 
     fun rerollDice() {
@@ -281,6 +283,20 @@ fun GameScreen(targetScore: Int) {
             if (selectedDice[index]) dice else (1..6).random()
         }
         rightDiceImages = List(5) { (1..6).random() }
+    }
+
+    fun computerRerollDice() {
+        // Randomly decide whether to reroll
+        val reroll = (0..1).random() == 1
+        if (reroll) {
+            // Randomly decide which dice to keep
+            computerSelectedDice = List(5) { (0..1).random() == 1 }
+            rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
+                if (computerSelectedDice[index]) dice else (1..6).random()
+            }
+        } else {
+            computerSelectedDice = List(5) { false }
+        }
     }
 
     Column(
@@ -427,7 +443,7 @@ fun GameScreen(targetScore: Int) {
                             .size(70.dp)
                             .border(
                                 width = 2.dp,
-                                color = if (selectedDice[index]) Color.Red else Color.Transparent,
+                                color = if (selectedDice[index]) Color(0xFF26FF00) else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
@@ -457,12 +473,22 @@ fun GameScreen(targetScore: Int) {
                     modifier = Modifier.size(45.dp)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                rightDiceImages.forEach { dice ->
-                    Image(
-                        painter = painterResource(id = getDiceResource(dice)),
-                        contentDescription = "Dice $dice",
-                        modifier = Modifier.size(70.dp)
-                    )
+                rightDiceImages.forEachIndexed { index, dice ->
+                    Box(
+                        modifier = Modifier
+                            .size(70.dp)
+                            .border(
+                                width = 4.dp,
+                                color = if (computerSelectedDice[index]) Color(0xFFFF00E5) else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = getDiceResource(dice)),
+                            contentDescription = "Dice $dice"
+                        )
+                    }
                 }
             }
         }
@@ -475,6 +501,7 @@ fun GameScreen(targetScore: Int) {
             Button(
                 onClick = {
                     rerollDice()
+                    computerRerollDice()
                     rollCount++
                     if (rollCount == 3) {
                         updateScores()
@@ -497,6 +524,10 @@ fun GameScreen(targetScore: Int) {
             }
             Button(
                 onClick = {
+                    while (rollCount < 3) {
+                        computerRerollDice()
+                        rollCount++
+                    }
                     updateScores()
                     rollCount = 0
                 },
