@@ -28,6 +28,9 @@ fun GameScreen(targetScore: Int) {
     var computerTotalScore by remember { mutableIntStateOf(0) }
     var selectedDice by remember { mutableStateOf(List(5) { false }) }
     var computerSelectedDice by remember { mutableStateOf(List(5) { false }) }
+    var showWinDialog by remember { mutableStateOf(false) }
+    var winMessage by remember { mutableStateOf("") }
+    var winMessageColor by remember { mutableStateOf(Color.White) }
 
     fun updateScores() {
         leftDiceSum = leftDiceImages.sum()
@@ -36,6 +39,16 @@ fun GameScreen(targetScore: Int) {
         computerTotalScore += rightDiceSum
         selectedDice = List(5) { false } // Clear the red borders
         computerSelectedDice = List(5) { false } // Clear the green borders
+
+        if (humanTotalScore >= targetScore) {
+            winMessage = "You win!"
+            winMessageColor = Color.Green
+            showWinDialog = true
+        } else if (computerTotalScore >= targetScore) {
+            winMessage = "You lose"
+            winMessageColor = Color.Red
+            showWinDialog = true
+        }
     }
 
     fun rerollDice() {
@@ -306,5 +319,24 @@ fun GameScreen(targetScore: Int) {
                 )
             }
         }
+    }
+
+    if (showWinDialog) {
+        AlertDialog(
+            onDismissRequest = { showWinDialog = false },
+            confirmButton = {
+                Button(onClick = { showWinDialog = false }) {
+                    Text("OK")
+                }
+            },
+            title = {
+                Text(
+                    text = winMessage,
+                    color = winMessageColor,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        )
     }
 }
