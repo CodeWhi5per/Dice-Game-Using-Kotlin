@@ -56,15 +56,15 @@ fun GameScreen(
         computerSelectedDice = List(5) { false } // Clear the green borders
 
         if (humanTotalScore >= targetScore) {
-            winMessage = "You win!"
-            winMessageColor = Color.Green
+            winMessage = "YOU WIN!"
+            winMessageColor = Color.Black
             showWinDialog = true
             gameOver = true
             currentHumanWinCount++
             onWinUpdate(currentHumanWinCount, currentComputerWinCount)
         } else if (computerTotalScore >= targetScore) {
-            winMessage = "You lose"
-            winMessageColor = Color.Red
+            winMessage = "YOU LOSE!"
+            winMessageColor = Color.Black
             showWinDialog = true
             gameOver = true
             currentComputerWinCount++
@@ -135,7 +135,7 @@ fun GameScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "$currentHumanWinCount",
+                            text = "H : $currentHumanWinCount",
                             color = Color.Black,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
@@ -149,7 +149,7 @@ fun GameScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "$currentComputerWinCount",
+                            text = "C : $currentComputerWinCount",
                             color = Color.Black,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
@@ -241,7 +241,7 @@ fun GameScreen(
                 leftDiceImages.forEachIndexed { index, dice ->
                     Box(
                         modifier = Modifier
-                            .size(65.dp)
+                            .size(60.dp)
                             .border(
                                 width = 4.dp,
                                 color = if (selectedDice[index]) Color.Green else Color.Transparent,
@@ -277,7 +277,7 @@ fun GameScreen(
                 rightDiceImages.forEachIndexed { index, dice ->
                     Box(
                         modifier = Modifier
-                            .size(65.dp)
+                            .size(60.dp)
                             .border(
                                 width = 4.dp,
                                 color = if (computerSelectedDice[index]) Color.Red else Color.Transparent,
@@ -360,13 +360,21 @@ fun GameScreen(
             onDismissRequest = {},
             confirmButton = {},
             text = {
-                Text(
-                    text = winMessage,
-                    color = winMessageColor,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp), // Adjust height as needed
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = winMessage,
+                        color = Color.Black,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+            },
+            containerColor = if (winMessage == "YOU WIN!") Color.Green else Color.Red
         )
     }
 }
