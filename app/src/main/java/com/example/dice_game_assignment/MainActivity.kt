@@ -257,11 +257,10 @@ fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
 
 @Composable
 fun GameScreen(targetScore: Int) {
-    var leftDiceImages by remember { mutableStateOf((1..6).shuffled().take(5)) }
-    var rightDiceImages by remember { mutableStateOf((7..12).shuffled().take(5)) }
+    var leftDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
+    var rightDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var leftDiceSum by remember { mutableStateOf(0) }
     var rightDiceSum by remember { mutableStateOf(0) }
-
 
     Column(
         modifier = Modifier
@@ -439,8 +438,8 @@ fun GameScreen(targetScore: Int) {
         ) {
             Button(
                 onClick = {
-                    leftDiceImages = (1..6).shuffled().take(5)
-                    rightDiceImages = (7..12).shuffled().take(5)
+                    leftDiceImages = List(5) { (1..6).random() }
+                    rightDiceImages = List(5) { (1..6).random() }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFF5722),
@@ -459,7 +458,7 @@ fun GameScreen(targetScore: Int) {
             Button(
                 onClick = {
                     leftDiceSum = leftDiceImages.sum()
-                    rightDiceSum = rightDiceImages.map { (it - 1) % 6 + 1 }.sum()
+                    rightDiceSum = rightDiceImages.sum()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF08FF00),
