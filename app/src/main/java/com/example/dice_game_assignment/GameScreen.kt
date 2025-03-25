@@ -1,4 +1,5 @@
 package com.example.dice_game_assignment
+import com.example.dice_game_assignment.DiceResources.getDiceResource
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,10 +16,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.dice_game_assignment.DiceResources.getDiceResource
+import androidx.activity.compose.BackHandler
+import kotlinx.coroutines.*
 
 @Composable
-fun GameScreen(targetScore: Int) {
+fun GameScreen(targetScore: Int, onBack: () -> Unit) {
     var leftDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var rightDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var leftDiceSum by remember { mutableIntStateOf(0) }
@@ -31,6 +33,11 @@ fun GameScreen(targetScore: Int) {
     var showWinDialog by remember { mutableStateOf(false) }
     var winMessage by remember { mutableStateOf("") }
     var winMessageColor by remember { mutableStateOf(Color.White) }
+    var gameOver by remember { mutableStateOf(false) }
+
+    BackHandler {
+        onBack()
+    }
 
     fun updateScores() {
         leftDiceSum = leftDiceImages.sum()
@@ -44,10 +51,12 @@ fun GameScreen(targetScore: Int) {
             winMessage = "You win!"
             winMessageColor = Color.Green
             showWinDialog = true
+            gameOver = true
         } else if (computerTotalScore >= targetScore) {
             winMessage = "You lose"
             winMessageColor = Color.Red
             showWinDialog = true
+            gameOver = true
         }
     }
 
@@ -69,6 +78,13 @@ fun GameScreen(targetScore: Int) {
             }
         } else {
             computerSelectedDice = List(5) { false }
+        }
+    }
+
+    if (showWinDialog) {
+        LaunchedEffect(Unit) {
+            delay(3000)
+            showWinDialog = false
         }
     }
 
@@ -273,12 +289,14 @@ fun GameScreen(targetScore: Int) {
         ) {
             Button(
                 onClick = {
-                    rerollDice()
-                    computerRerollDice()
-                    rollCount++
-                    if (rollCount == 3) {
-                        updateScores()
-                        rollCount = 0
+                    if (!gameOver) {
+                        rerollDice()
+                        computerRerollDice()
+                        rollCount++
+                        if (rollCount == 3) {
+                            updateScores()
+                            rollCount = 0
+                        }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -287,7 +305,8 @@ fun GameScreen(targetScore: Int) {
                 ),
                 modifier = Modifier
                     .height(40.dp)
-                    .width(120.dp)
+                    .width(120.dp),
+                enabled = !gameOver
             ) {
                 Text(
                     text = "THROW",
@@ -297,12 +316,14 @@ fun GameScreen(targetScore: Int) {
             }
             Button(
                 onClick = {
-                    while (rollCount < 3) {
-                        computerRerollDice()
-                        rollCount++
+                    if (!gameOver) {
+                        while (rollCount < 3) {
+                            computerRerollDice()
+                            rollCount++
+                        }
+                        updateScores()
+                        rollCount = 0
                     }
-                    updateScores()
-                    rollCount = 0
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF08FF00),
@@ -310,7 +331,8 @@ fun GameScreen(targetScore: Int) {
                 ),
                 modifier = Modifier
                     .height(40.dp)
-                    .width(120.dp)
+                    .width(120.dp),
+                enabled = !gameOver
             ) {
                 Text(
                     text = "SCORE",
@@ -323,13 +345,9 @@ fun GameScreen(targetScore: Int) {
 
     if (showWinDialog) {
         AlertDialog(
-            onDismissRequest = { showWinDialog = false },
-            confirmButton = {
-                Button(onClick = { showWinDialog = false }) {
-                    Text("OK")
-                }
-            },
-            title = {
+            onDismissRequest = {},
+            confirmButton = {},
+            text = {
                 Text(
                     text = winMessage,
                     color = winMessageColor,

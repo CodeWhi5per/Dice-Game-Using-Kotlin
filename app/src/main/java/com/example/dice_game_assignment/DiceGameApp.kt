@@ -32,7 +32,7 @@ fun DiceGameApp() {
             )
         }
         showGameScreen -> {
-            GameScreen(targetScore)
+            GameScreen(targetScore, onBack = { showGameScreen = false })
         }
         else -> {
             Box(
