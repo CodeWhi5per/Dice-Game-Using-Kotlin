@@ -273,6 +273,7 @@ fun GameScreen(targetScore: Int) {
         rightDiceSum = rightDiceImages.sum()
         humanTotalScore += leftDiceSum
         computerTotalScore += rightDiceSum
+        selectedDice = List(5) { false } // Clear the red borders
     }
 
     fun rerollDice() {
