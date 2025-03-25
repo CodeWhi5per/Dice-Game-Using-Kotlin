@@ -261,6 +261,16 @@ fun GameScreen(targetScore: Int) {
     var rightDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var leftDiceSum by remember { mutableStateOf(0) }
     var rightDiceSum by remember { mutableStateOf(0) }
+    var rollCount by remember { mutableStateOf(0) }
+    var humanTotalScore by remember { mutableStateOf(0) }
+    var computerTotalScore by remember { mutableStateOf(0) }
+
+    fun updateScores() {
+        leftDiceSum = leftDiceImages.sum()
+        rightDiceSum = rightDiceImages.sum()
+        humanTotalScore += leftDiceSum
+        computerTotalScore += rightDiceSum
+    }
 
     Column(
         modifier = Modifier
@@ -340,7 +350,7 @@ fun GameScreen(targetScore: Int) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "H : $leftDiceSum",
+                            text = "H : $humanTotalScore",
                             color = Color.Black,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
@@ -354,7 +364,7 @@ fun GameScreen(targetScore: Int) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "C : $rightDiceSum",
+                            text = "C : $computerTotalScore",
                             color = Color.Black,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
@@ -440,6 +450,11 @@ fun GameScreen(targetScore: Int) {
                 onClick = {
                     leftDiceImages = List(5) { (1..6).random() }
                     rightDiceImages = List(5) { (1..6).random() }
+                    rollCount++
+                    if (rollCount == 3) {
+                        updateScores()
+                        rollCount = 0
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFF5722),
@@ -457,8 +472,8 @@ fun GameScreen(targetScore: Int) {
             }
             Button(
                 onClick = {
-                    leftDiceSum = leftDiceImages.sum()
-                    rightDiceSum = rightDiceImages.sum()
+                    updateScores()
+                    rollCount = 0
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF08FF00),
