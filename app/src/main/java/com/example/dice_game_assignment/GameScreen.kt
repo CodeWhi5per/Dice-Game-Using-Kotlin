@@ -1,6 +1,6 @@
 package com.example.dice_game_assignment
-import com.example.dice_game_assignment.DiceResources.getDiceResource
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,11 +12,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.activity.compose.BackHandler
+import com.example.dice_game_assignment.DiceResources.getDiceResource
 import kotlinx.coroutines.*
 
 @Composable
@@ -27,6 +29,9 @@ fun GameScreen(
     onBack: () -> Unit,
     onWinUpdate: (Int, Int) -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     var leftDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var rightDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var leftDiceSum by remember { mutableIntStateOf(0) }
@@ -52,7 +57,6 @@ fun GameScreen(
 
     fun updateScores() {
         showDice = true
-        // Roll the remaining dice before updating scores
         leftDiceImages = leftDiceImages.mapIndexed { index, dice ->
             if (selectedDice[index]) dice else (1..6).random()
         }
@@ -138,7 +142,6 @@ fun GameScreen(
         rightDiceImages = List(5) { (1..6).random() }
     }
 
-
     // ---Strategy Explaination---
 
 //    Score Difference Calculation: calculate the difference between the human's total score and the computer's total score.
@@ -211,7 +214,7 @@ fun GameScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 30.dp),
+                .padding(horizontal = if (isLandscape) 15.dp else 30.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
@@ -220,7 +223,7 @@ fun GameScreen(
                 Text(
                     text = "WIN COUNT",
                     color = Color.White,
-                    fontSize = 18.sp,
+                    fontSize = if (isLandscape) 12.sp else 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -229,7 +232,7 @@ fun GameScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .width(70.dp)
+                            .width(if (isLandscape) 35.dp else 70.dp)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
@@ -237,13 +240,13 @@ fun GameScreen(
                         Text(
                             text = "H : $currentHumanWinCount",
                             color = Color.Black,
-                            fontSize = 13.sp,
+                            fontSize = if (isLandscape) 9.sp else 13.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Box(
                         modifier = Modifier
-                            .width(70.dp)
+                            .width(if (isLandscape) 35.dp else 70.dp)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
@@ -251,7 +254,7 @@ fun GameScreen(
                         Text(
                             text = "C : $currentComputerWinCount",
                             color = Color.Black,
-                            fontSize = 13.sp,
+                            fontSize = if (isLandscape) 9.sp else 13.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -263,7 +266,7 @@ fun GameScreen(
                 Text(
                     text = "SCORE",
                     color = Color.White,
-                    fontSize = 18.sp,
+                    fontSize = if (isLandscape) 12.sp else 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -272,7 +275,7 @@ fun GameScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .width(70.dp)
+                            .width(if (isLandscape) 35.dp else 70.dp)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
@@ -280,13 +283,13 @@ fun GameScreen(
                         Text(
                             text = "H : $humanTotalScore",
                             color = Color.Black,
-                            fontSize = 13.sp,
+                            fontSize = if (isLandscape) 9.sp else 13.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Box(
                         modifier = Modifier
-                            .width(70.dp)
+                            .width(if (isLandscape) 35.dp else 70.dp)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
@@ -294,104 +297,185 @@ fun GameScreen(
                         Text(
                             text = "C : $computerTotalScore",
                             color = Color.Black,
-                            fontSize = 13.sp,
+                            fontSize = if (isLandscape) 9.sp else 13.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
         }
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(if (isLandscape) 20.dp else 40.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 100.dp)
+                .padding(horizontal = if (isLandscape) 300.dp else 100.dp)
                 .background(Color(0xFF262626), shape = RoundedCornerShape(16.dp))
                 .width(20.dp)
-                .height(60.dp),
+                .height(if (isLandscape) 30.dp else 60.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "$targetScore",
                 color = Color.White,
-                fontSize = 40.sp,
+                fontSize = if (isLandscape) 20.sp else 40.sp,
                 fontWeight = FontWeight.Black
             )
         }
-        Spacer(modifier = Modifier.height(40.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Column(
+        Spacer(modifier = Modifier.height(if (isLandscape) 20.dp else 40.dp))
+        if (isLandscape) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 70.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.user_icon),
-                    contentDescription = "User",
-                    modifier = Modifier.size(40.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                if (showDice) {
-                    leftDiceImages.forEachIndexed { index, dice ->
-                        Box(
-                            modifier = Modifier
-                                .size(60.dp)
-                                .border(
-                                    width = 4.dp,
-                                    color = if (selectedDice[index]) Color.Green else Color.Transparent,
-                                    shape = RoundedCornerShape(8.dp)
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 35.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.user_icon),
+                        contentDescription = "User",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    if (showDice) {
+                        leftDiceImages.forEachIndexed { index, dice ->
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .border(
+                                        width = 4.dp,
+                                        color = if (selectedDice[index]) Color.Green else Color.Transparent,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable {
+                                        selectedDice = selectedDice.toMutableList().apply {
+                                            this[index] = !this[index]
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = getDiceResource(dice)),
+                                    contentDescription = "Dice $dice"
                                 )
-                                .clickable {
-                                    selectedDice = selectedDice.toMutableList().apply {
-                                        this[index] = !this[index]
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = getDiceResource(dice)),
-                                contentDescription = "Dice $dice"
-                            )
+                            }
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 35.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.computer_icon),
+                        contentDescription = "Computer",
+                        modifier = Modifier.size(22.5.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    if (showDice) {
+                        rightDiceImages.forEachIndexed { index, dice ->
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .border(
+                                        width = 4.dp,
+                                        color = if (computerSelectedDice[index]) Color.Red else Color.Transparent,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = getDiceResource(dice, isRightSide = true)),
+                                    contentDescription = "Dice $dice"
+                                )
+                            }
                         }
                     }
                 }
             }
-            Column(
+        } else {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 70.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.computer_icon),
-                    contentDescription = "Computer",
-                    modifier = Modifier.size(45.dp)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                if (showDice) {
-                    rightDiceImages.forEachIndexed { index, dice ->
-                        Box(
-                            modifier = Modifier
-                                .size(60.dp)
-                                .border(
-                                    width = 4.dp,
-                                    color = if (computerSelectedDice[index]) Color.Red else Color.Transparent,
-                                    shape = RoundedCornerShape(8.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = getDiceResource(dice, isRightSide = true)),
-                                contentDescription = "Dice $dice"
-                            )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 70.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.user_icon),
+                        contentDescription = "User",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (showDice) {
+                        leftDiceImages.forEachIndexed { index, dice ->
+                            Box(
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .border(
+                                        width = 4.dp,
+                                        color = if (selectedDice[index]) Color.Green else Color.Transparent,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable {
+                                        selectedDice = selectedDice.toMutableList().apply {
+                                            this[index] = !this[index]
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = getDiceResource(dice)),
+                                    contentDescription = "Dice $dice"
+                                )
+                            }
+                        }
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 70.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.computer_icon),
+                        contentDescription = "Computer",
+                        modifier = Modifier.size(45.dp)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    if (showDice) {
+                        rightDiceImages.forEachIndexed { index, dice ->
+                            Box(
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .border(
+                                        width = 4.dp,
+                                        color = if (computerSelectedDice[index]) Color.Red else Color.Transparent,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = getDiceResource(dice, isRightSide = true)),
+                                    contentDescription = "Dice $dice"
+                                )
+                            }
                         }
                     }
                 }
@@ -420,13 +504,13 @@ fun GameScreen(
                     contentColor = Color.Black
                 ),
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(120.dp),
+                    .height(if (isLandscape) 30.dp else 40.dp)
+                    .width(if (isLandscape) 100.dp else 120.dp),
                 enabled = !gameOver
             ) {
                 Text(
                     text = "THROW",
-                    fontSize = 18.sp,
+                    fontSize = if (isLandscape) 9.sp else 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -446,13 +530,13 @@ fun GameScreen(
                     contentColor = Color.Black
                 ),
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(120.dp),
+                    .height(if (isLandscape) 30.dp else 40.dp)
+                    .width(if (isLandscape) 100.dp else 120.dp),
                 enabled = !gameOver
             ) {
                 Text(
                     text = "SCORE",
-                    fontSize = 18.sp,
+                    fontSize = if (isLandscape) 9.sp else 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -467,13 +551,13 @@ fun GameScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(60.dp),
+                        .height(if (isLandscape) 30.dp else 60.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = winMessage,
                         color = Color.Black,
-                        fontSize = 40.sp,
+                        fontSize = if (isLandscape) 20.sp else 40.sp,
                         fontWeight = FontWeight.Black
                     )
                 }
