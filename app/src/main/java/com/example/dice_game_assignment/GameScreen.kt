@@ -138,6 +138,26 @@ fun GameScreen(
         rightDiceImages = List(5) { (1..6).random() }
     }
 
+
+    // ---Strategy Explaination---
+
+//    Score Difference Calculation: calculate the difference between the human's total score and the computer's total score.
+//    Significantly Lower Score: If the computer's score is significantly lower (by more than 20 points), it rerolls the dice with values less than 4 to try to catch up.
+//    Significantly Higher Score: If the computer's score is significantly higher (by more than 20 points), it rerolls the dice with values greater than 3 to maintain its lead.
+//    Random Decision: If the scores are close, the computer randomly decides whether to reroll or not.
+
+
+//    ADVANTAGES:
+
+//    *** Adaptive Strategy: The computer adapts its strategy based on the current score difference, making it more competitive.
+//    *** Risk Management: By rerolling only the lowest or highest dice based on the situation, the computer manages its risk effectively.
+
+//    DISADVANTAGES:
+
+//    *** Randomness: The random decision in close score situations may not always be optimal.
+//    *** Fixed Threshold: The threshold of 20 points for significant score difference is arbitrary and may not be optimal for all game scenarios.
+
+
     fun computerRerollDice() {
         showDice = true
         val scoreDifference = humanTotalScore - computerTotalScore
