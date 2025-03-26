@@ -1,13 +1,16 @@
 package com.example.dice_game_assignment
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -15,12 +18,15 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun DiceGameApp() {
-    var showGameScreen by remember { mutableStateOf(false) }
-    var showAboutDialog by remember { mutableStateOf(false) }
-    var showTargetSetScreen by remember { mutableStateOf(false) }
-    var targetScore by remember { mutableIntStateOf(101) }
-    var humanWinCount by remember { mutableIntStateOf(0) }
-    var computerWinCount by remember { mutableIntStateOf(0) }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    var showGameScreen by rememberSaveable { mutableStateOf(false) }
+    var showAboutDialog by rememberSaveable { mutableStateOf(false) }
+    var showTargetSetScreen by rememberSaveable { mutableStateOf(false) }
+    var targetScore by rememberSaveable { mutableStateOf(101) }
+    var humanWinCount by rememberSaveable { mutableStateOf(0) }
+    var computerWinCount by rememberSaveable { mutableStateOf(0) }
 
     when {
         showTargetSetScreen -> {
@@ -55,15 +61,15 @@ fun DiceGameApp() {
                     painter = painterResource(id = R.drawable.dice_app_background),
                     contentDescription = "Dice App Background",
                     modifier = Modifier
-                        .size(400.dp)
+                        .size(if (isLandscape) 250.dp else 400.dp)
                         .align(Alignment.TopCenter)
-                        .padding(top = 280.dp)
+                        .padding(top = if (isLandscape) 1.dp else 280.dp)
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp)
-                        .padding(bottom = 130.dp),
+                        .padding(bottom = if (isLandscape) 10.dp else 130.dp),
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -75,12 +81,12 @@ fun DiceGameApp() {
                         ),
                         modifier = Modifier
                             .padding(8.dp)
-                            .height(60.dp)
-                            .width(200.dp)
+                            .height(if (isLandscape) 40.dp else 60.dp)
+                            .width(if (isLandscape) 100.dp else 200.dp)
                     ) {
                         Text(
                             text = "NEW GAME",
-                            fontSize = 18.sp,
+                            fontSize = if (isLandscape) 9.sp else 18.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -93,12 +99,12 @@ fun DiceGameApp() {
                         ),
                         modifier = Modifier
                             .padding(8.dp)
-                            .height(60.dp)
-                            .width(200.dp)
+                            .height(if (isLandscape) 40.dp else 60.dp)
+                            .width(if (isLandscape) 100.dp else 200.dp)
                     ) {
                         Text(
                             text = "ABOUT",
-                            fontSize = 18.sp,
+                            fontSize = if (isLandscape) 9.sp else 18.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
