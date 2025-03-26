@@ -159,22 +159,30 @@ fun GameScreen(
 
 
     fun computerRerollDice() {
-        showDice = true
+        // Calculate the score difference
         val scoreDifference = humanTotalScore - computerTotalScore
 
+        // If the computer's total score is significantly lower than the human's total score
         if (scoreDifference > 10) {
+            // Reroll to catch up with the high dice
             computerSelectedDice = rightDiceImages.map { it < 4 }
             rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
                 if (computerSelectedDice[index]) (1..6).random() else dice
             }
-        } else if (scoreDifference < -10) {
+        }
+        // If the computer's total score is significantly higher than the human's total score
+        else if (scoreDifference < -10) {
+            // Reroll with the lowest dice
             computerSelectedDice = rightDiceImages.map { it > 3 }
             rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
                 if (computerSelectedDice[index]) (1..6).random() else dice
             }
-        } else {
+        }
+        // Otherwise, decide randomly whether to reroll or not
+        else {
             val reroll = (0..1).random() == 1
             if (reroll) {
+                // Randomly decide which dice to keep
                 computerSelectedDice = List(5) { (0..1).random() == 1 }
                 rightDiceImages = rightDiceImages.mapIndexed { index, dice ->
                     if (computerSelectedDice[index]) dice else (1..6).random()
