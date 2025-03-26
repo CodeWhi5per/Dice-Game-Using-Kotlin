@@ -29,8 +29,12 @@ fun GameScreen(
     onBack: () -> Unit,
     onWinUpdate: (Int, Int) -> Unit
 ) {
+    // Get the current configuration to determine orientation
+
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    // State variables to manage the dice images, sums, scores, and game state
 
     var leftDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
     var rightDiceImages by remember { mutableStateOf(List(5) { (1..6).random() }) }
@@ -51,9 +55,13 @@ fun GameScreen(
     var computerAttempts by remember { mutableIntStateOf(0) }
     var showDice by remember { mutableStateOf(false) }
 
+    // Handle back button press
+
     BackHandler {
         onBack()
     }
+
+    // Function to update scores and determine the winner
 
     fun updateScores() {
         showDice = true
@@ -68,6 +76,8 @@ fun GameScreen(
         computerSelectedDice = List(5) { false }
         humanAttempts++
         computerAttempts++
+
+        // Determine the winner based on the scores and attempts
 
         if (humanTotalScore >= targetScore && computerTotalScore >= targetScore) {
             if (humanAttempts == computerAttempts) {
@@ -134,6 +144,8 @@ fun GameScreen(
         onWinUpdate(currentHumanWinCount, currentComputerWinCount)
     }
 
+    // Function to reroll the dice
+
     fun rerollDice() {
         showDice = true
         leftDiceImages = leftDiceImages.mapIndexed { index, dice ->
@@ -196,12 +208,16 @@ fun GameScreen(
         }
     }
 
+    // Show the win dialog for 3 seconds
+
     if (showWinDialog) {
         LaunchedEffect(Unit) {
             delay(3000)
             showWinDialog = false
         }
     }
+
+    // UI layout for the game screen
 
     Column(
         modifier = Modifier
@@ -542,6 +558,8 @@ fun GameScreen(
             }
         }
     }
+
+    // Show the win dialog
 
     if (showWinDialog) {
         AlertDialog(

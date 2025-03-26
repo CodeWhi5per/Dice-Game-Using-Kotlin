@@ -18,9 +18,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun DiceGameApp() {
+    // Get the current configuration to determine orientation
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    // State variables to manage the visibility of different screens and dialogs
     var showGameScreen by rememberSaveable { mutableStateOf(false) }
     var showAboutDialog by rememberSaveable { mutableStateOf(false) }
     var showTargetSetScreen by rememberSaveable { mutableStateOf(false) }
@@ -28,6 +30,7 @@ fun DiceGameApp() {
     var humanWinCount by rememberSaveable { mutableStateOf(0) }
     var computerWinCount by rememberSaveable { mutableStateOf(0) }
 
+    // Determine which screen to show based on the state variables
     when {
         showTargetSetScreen -> {
             TargetSetScreen(
@@ -52,11 +55,13 @@ fun DiceGameApp() {
             )
         }
         else -> {
+            // Main menu screen
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black)
             ) {
+                // Background image
                 Image(
                     painter = painterResource(id = R.drawable.dice_app_background),
                     contentDescription = "Dice App Background",
@@ -65,6 +70,7 @@ fun DiceGameApp() {
                         .align(Alignment.TopCenter)
                         .padding(top = if (isLandscape) 1.dp else 280.dp)
                 )
+                // Buttons for starting a new game and showing the about dialog
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -113,6 +119,7 @@ fun DiceGameApp() {
         }
     }
 
+    // Show the about dialog if the state variable is true
     if (showAboutDialog) {
         AboutDialog(onDismiss = { showAboutDialog = false })
     }

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
+    // State variable to hold the target score input
     var target by remember { mutableStateOf("101") }
 
     Box(
@@ -37,9 +38,9 @@ fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = target,
-                onValueChange = { target = it },
+                onValueChange = { target = it }, // Update target state on input change
                 shape = MaterialTheme.shapes.large,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), // Set keyboard type to number
                 textStyle = LocalTextStyle.current.copy(fontSize = 24.sp),
                 colors = TextFieldDefaults.colors(
                     unfocusedTextColor = Color.White,
@@ -59,7 +60,7 @@ fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = onCancel,
+                    onClick = onCancel, // Handle cancel button click
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = Color.Black
@@ -76,7 +77,7 @@ fun TargetSetScreen(onCancel: () -> Unit, onOk: (Int) -> Unit) {
                     )
                 }
                 Button(
-                    onClick = { onOk(target.toIntOrNull() ?: 101) },
+                    onClick = { onOk(target.toIntOrNull() ?: 101) }, // Handle OK button click and pass the target score
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF00E5FF),
                         contentColor = Color.Black
